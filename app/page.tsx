@@ -1,11 +1,11 @@
-'use client'
+"use client";
 import { useSession, signIn, signOut } from "next-auth/react";
 
 export default function Home() {
-  const {status} = useSession()
+  const { status } = useSession();
 
   if (status === "loading") {
-    return <div>Loading...</div>
+    return <div>Loading...</div>;
   }
 
   if (status === "unauthenticated") {
@@ -14,7 +14,7 @@ export default function Home() {
         <div>Not signed in</div>
         <button onClick={() => signIn()}>Login</button>
       </>
-    )
+    );
   }
 
   return (
