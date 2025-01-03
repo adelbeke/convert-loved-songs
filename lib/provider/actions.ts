@@ -4,15 +4,27 @@ import { HttpSession } from "@/types/session";
 import { http } from "@/lib/http";
 import { Session } from "next-auth";
 
-type GetLovedSongsResponse = {
-  total: number;
+type GetLovedSongsOptions = {
+  session: Session;
+  offset: number;
 };
 
-type GetLovedSongs = (session: Session) => Promise<GetLovedSongsResponse>;
+type GetLovedSongsResponse = {
+  total: number;
+  items: Array<{
+    track: {
+      uri: string;
+    };
+  }>;
+};
 
-export const getLovedSongs: GetLovedSongs = async (session) => {
+type GetLovedSongs = (
+  options: GetLovedSongsOptions,
+) => Promise<GetLovedSongsResponse>;
+
+export const getLovedSongs: GetLovedSongs = async ({ session, offset }) => {
   return await http.get<GetLovedSongsResponse>({
-    url: `https://api.spotify.com/v1/me/tracks`,
+    url: `https://api.spotify.com/v1/me/tracks?offset=${offset}&limit=50`,
     session: session as HttpSession,
     error: "Failed to fetch loved songs",
   });
@@ -46,4 +58,23 @@ export const createPlaylist: CreatePlaylist = async (session) => {
       description: "A playlist with all your loved songs",
     },
   });
+};
+
+type AddTracksToPlaylist = (session: Session) => Promise<void>;
+
+export const addTracksToPlaylist: AddTracksToPlaylist = async (session) => {
+  const uris = [];
+  const { items, total } = await getLovedSongs({ session, offset: 0 });
+
+  for (const { track } of items) {
+    uris.push(track.uri);
+  }
+
+  for (let offset = 50; offset < total; offset += 50) {
+    const { items } = await getLovedSongs({ session, offset });
+
+    for (const { track } of items) {
+      uris.push(track.uri);
+    }
+  }
 };
