@@ -1,54 +1,23 @@
 import { Session } from "next-auth";
-import {
-  addTracksToPlaylist,
-  createPlaylist,
-  getLovedSongs,
-} from "@/lib/provider/actions";
-import { useState } from "react";
 import { Icon, ICONS } from "@/design-system/components/Icon";
-import { faSignOut } from "@fortawesome/free-solid-svg-icons";
 import { Button } from "@/design-system/components/Button";
 import Image from "next/image";
 import { signOut } from "next-auth/react";
+import { useCountLovedSongs } from "@/lib/provider/hooks";
 
 type Props = {
   session: Session;
 };
 
 export function ToPlaylist({ session }: Props) {
-  const [error, setError] = useState<string | null>(null);
-  const [totalOfLovedSongs, setTotalOfLovedSongs] = useState<number | null>(
-    null,
-  );
-
-  const handleGetLovedSongs = async () => {
-    try {
-      setError(null);
-      const response = await getLovedSongs({ session, offset: 0 });
-      setTotalOfLovedSongs(response.total);
-    } catch (error) {
-      setError((error as Error).message);
-    }
-  };
-
-  const handleCreatePlaylist = async () => {
-    try {
-      setError(null);
-      const { id } = await createPlaylist(session);
-      await addTracksToPlaylist({ session, playlistId: id });
-
-      alert("Playlist created");
-    } catch (error) {
-      setError((error as Error).message);
-    }
-  };
+  const totalLovedSongs = useCountLovedSongs({ session });
 
   if (!session.user) {
     return null;
   }
 
   return (
-    <section className={"flex flex-col p-4"}>
+    <main className={"flex flex-col p-4 min-h-screen"}>
       <header className={"flex flex-row items-center justify-between"}>
         <div className={"flex flex-row items-center gap-4"}>
           {session.user?.image && (
@@ -71,6 +40,23 @@ export function ToPlaylist({ session }: Props) {
           <Icon icon={ICONS.signOut} color={"#1ed760"} />
         </Button>
       </header>
-    </section>
+
+      <section
+        className={"flex-1 p-4 flex flex-col justify-center items-center"}
+      >
+        <p>
+          You currently have{" "}
+          <span className={"text-primary font-black"}>{totalLovedSongs}</span>{" "}
+          loved songs.
+        </p>
+        <p>Let&#39;s create a playlist from them!</p>
+        <Button
+          className={"my-4 font-semibold bg-primary text-background"}
+          onClick={() => {}}
+        >
+          Create playlist
+        </Button>
+      </section>
+    </main>
   );
 }

@@ -7,6 +7,7 @@ import { Session } from "next-auth";
 type GetLovedSongsOptions = {
   session: Session;
   offset: number;
+  limit?: number;
 };
 
 type GetLovedSongsResponse = {
@@ -22,9 +23,13 @@ type GetLovedSongs = (
   options: GetLovedSongsOptions,
 ) => Promise<GetLovedSongsResponse>;
 
-export const getLovedSongs: GetLovedSongs = async ({ session, offset }) => {
+export const getLovedSongs: GetLovedSongs = async ({
+  session,
+  offset,
+  limit = 50,
+}) => {
   return await http.get<GetLovedSongsResponse>({
-    url: `https://api.spotify.com/v1/me/tracks?offset=${offset}&limit=50`,
+    url: `https://api.spotify.com/v1/me/tracks?offset=${offset}&limit=${limit}`,
     session: session as HttpSession,
     error: "Failed to fetch loved songs",
   });
