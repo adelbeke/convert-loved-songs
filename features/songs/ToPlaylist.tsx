@@ -1,5 +1,5 @@
 import { Session } from "next-auth";
-import { getLovedSongs } from "@/lib/provider/actions";
+import { createPlaylist, getLovedSongs } from "@/lib/provider/actions";
 import { useState } from "react";
 
 type Props = {
@@ -16,6 +16,10 @@ export function ToPlaylist({ session }: Props) {
     setTotalOfLovedSongs(response.total);
   };
 
+  const handleCreatePlaylist = async () => {
+    await createPlaylist(session);
+  };
+
   return (
     <div className={"flex flex-col"}>
       <h1>Home</h1>
@@ -24,6 +28,7 @@ export function ToPlaylist({ session }: Props) {
         <p>You have {totalOfLovedSongs} loved songs</p>
       )}
       <button onClick={handleGetLovedSongs}>Get loved songs</button>
+      <button onClick={handleCreatePlaylist}>Create playlist</button>
     </div>
   );
 }
