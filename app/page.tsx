@@ -1,5 +1,5 @@
 "use client";
-import { useSession, signIn } from "next-auth/react";
+import { useSession, signIn, signOut } from "next-auth/react";
 import { ToPlaylist } from "@/features/songs/ToPlaylist";
 
 export default function Home() {
@@ -14,5 +14,10 @@ export default function Home() {
     );
   }
 
-  return <ToPlaylist session={data} />;
+  return (
+    <>
+      <ToPlaylist session={data} />
+      <button onClick={() => signOut()}>SIGNOUT</button>
+    </>
+  );
 }
