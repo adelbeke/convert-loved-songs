@@ -16,6 +16,7 @@ export function ConvertSongs({ session }: Props) {
   const [creatingState, setCreatingState] = useState<
     "idle" | "playlist" | "fill" | "done"
   >("idle");
+  const [error, setError] = useState<string | null>(null);
 
   const handleCreatePlaylist = async () => {
     try {
@@ -27,12 +28,19 @@ export function ConvertSongs({ session }: Props) {
 
       setCreatingState("done");
     } catch (error) {
+      setError((error as Error).message);
       setCreatingState("idle");
     }
   };
 
   const StateComponent: Record<typeof creatingState, ReactElement | null> = {
-    idle: <CreatePlaylist session={session} onCreate={handleCreatePlaylist} />,
+    idle: (
+      <CreatePlaylist
+        session={session}
+        error={error}
+        onCreate={handleCreatePlaylist}
+      />
+    ),
     playlist: <Creating state={"playlist"} />,
     fill: <Creating state={"fill"} />,
     done: <Created playlistUrl={playlistUrl} />,

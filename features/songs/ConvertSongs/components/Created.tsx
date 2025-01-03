@@ -26,7 +26,7 @@ export const Created = ({ playlistUrl }: Props) => {
       />
 
       <div>
-        <p className={"text-sm"}>
+        <p className={"text-sm text-center"}>
           If you can&#39;t see the playlist above, you can access it{" "}
           <a
             href={playlistUrl}
