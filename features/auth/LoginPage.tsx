@@ -1,5 +1,6 @@
 import { signIn } from "next-auth/react";
 import Image from "next/image";
+import { Button } from "@/design-system/components/Button";
 
 export const LoginPage = () => {
   const handleLogin = () => {
@@ -23,12 +24,7 @@ export const LoginPage = () => {
           share it with your friends!
         </span>
       </p>
-      <button
-        className={
-          "flex flex-row items-center gap-1 h-10 px-2 rounded-lg bg-transparent shadow-primary shadow-[0_0px_150px_0px_rgba(0,0,0,0.5)] text-sm"
-        }
-        onClick={handleLogin}
-      >
+      <Button onClick={handleLogin}>
         <Image
           src={"./spotify.svg"}
           height={24}
@@ -36,7 +32,7 @@ export const LoginPage = () => {
           alt={"Spotify logo"}
         />
         <span>Sign in with Spotify</span>
-      </button>
+      </Button>
     </section>
   );
 };

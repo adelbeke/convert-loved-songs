@@ -1,19 +1,19 @@
 "use client";
-import { useSession, signOut } from "next-auth/react";
-import { ToPlaylist } from "@/features/songs/ToPlaylist";
+import { useSession } from "next-auth/react";
+import { ConvertSongs } from "@/features/songs/ConvertSongs/ConvertSongs";
 import { LoginPage } from "@/features/auth/LoginPage";
+import { LoadingPage } from "@/features/auth/LoadingPage";
 
 export default function Home() {
   const { data, status } = useSession();
+
+  if (status === "loading") {
+    return <LoadingPage />;
+  }
 
   if (status !== "authenticated") {
     return <LoginPage />;
   }
 
-  return (
-    <>
-      <ToPlaylist session={data} />
-      <button onClick={() => signOut()}>SIGNOUT</button>
-    </>
-  );
+  return <ConvertSongs session={data} />;
 }
