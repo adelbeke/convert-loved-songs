@@ -5,10 +5,11 @@ import { Session } from "next-auth";
 
 type Props = {
   session: Session;
+  error: string | null;
   onCreate: () => void;
 };
 
-export const CreatePlaylist = ({ session, onCreate }: Props) => {
+export const CreatePlaylist = ({ session, error, onCreate }: Props) => {
   const { total, isLoading } = useCountLovedSongs({ session });
 
   return (
@@ -33,6 +34,7 @@ export const CreatePlaylist = ({ session, onCreate }: Props) => {
       >
         Create playlist
       </Button>
+      {error && <p className={"text-red-500"}>{error}</p>}
     </>
   );
 };
