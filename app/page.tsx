@@ -1,17 +1,13 @@
 "use client";
-import { useSession, signIn, signOut } from "next-auth/react";
+import { useSession, signOut } from "next-auth/react";
 import { ToPlaylist } from "@/features/songs/ToPlaylist";
+import { LoginPage } from "@/features/auth/LoginPage";
 
 export default function Home() {
   const { data, status } = useSession();
 
   if (status !== "authenticated") {
-    return (
-      <>
-        <div>Not signed in</div>
-        <button onClick={() => signIn()}>Login</button>
-      </>
-    );
+    return <LoginPage />;
   }
 
   return (
