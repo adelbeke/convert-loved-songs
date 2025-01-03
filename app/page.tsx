@@ -1,14 +1,11 @@
 "use client";
-import { useSession, signIn, signOut } from "next-auth/react";
+import { useSession, signIn } from "next-auth/react";
+import { ToPlaylist } from "@/features/songs/ToPlaylist";
 
 export default function Home() {
-  const { status } = useSession();
+  const { data, status } = useSession();
 
-  if (status === "loading") {
-    return <div>Loading...</div>;
-  }
-
-  if (status === "unauthenticated") {
+  if (status !== "authenticated") {
     return (
       <>
         <div>Not signed in</div>
@@ -17,11 +14,5 @@ export default function Home() {
     );
   }
 
-  return (
-    <div>
-      <h1>Home</h1>
-      <p>Protected content</p>
-      <button onClick={() => signOut()}>Logout</button>
-    </div>
-  );
+  return <ToPlaylist session={data} />;
 }
