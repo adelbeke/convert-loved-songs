@@ -5,10 +5,13 @@ import { Session } from "next-auth";
 type UseCountLovedSongsOptions = {
   session: Session;
 };
-type UseCountLovedSongs = (options: UseCountLovedSongsOptions) => number;
+type UseCountLovedSongs = (options: UseCountLovedSongsOptions) => {
+  total: number;
+  isLoading: boolean;
+};
 
 export const useCountLovedSongs: UseCountLovedSongs = ({ session }) => {
-  const { data } = useQuery({
+  const { data, isLoading } = useQuery({
     queryKey: ["count-loved-songs"],
     queryFn: async () => {
       const response = await getLovedSongs({
@@ -17,11 +20,12 @@ export const useCountLovedSongs: UseCountLovedSongs = ({ session }) => {
         limit: 1,
       });
 
-      console.log("response", response);
-
       return response.total;
     },
   });
 
-  return data ?? 0;
+  return {
+    total: data ?? 0,
+    isLoading,
+  };
 };

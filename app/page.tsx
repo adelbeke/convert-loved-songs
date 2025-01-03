@@ -1,6 +1,6 @@
 "use client";
 import { useSession } from "next-auth/react";
-import { ToPlaylist } from "@/features/songs/ToPlaylist";
+import { ConvertSongs } from "@/features/songs/ConvertSongs/ConvertSongs";
 import { LoginPage } from "@/features/auth/LoginPage";
 
 export default function Home() {
@@ -14,5 +14,5 @@ export default function Home() {
     return <LoginPage />;
   }
 
-  return <ToPlaylist session={data} />;
+  return <ConvertSongs session={data} />;
 }

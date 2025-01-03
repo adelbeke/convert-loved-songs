@@ -49,13 +49,22 @@ const getUser: GetUser = async (session) => {
   });
 };
 
-type CreatePlaylistResponse = {
-  id: string;
+type CreatePlaylistOptions = {
+  session: Session;
 };
 
-type CreatePlaylist = (session: Session) => Promise<CreatePlaylistResponse>;
+type CreatePlaylistResponse = {
+  id: string;
+  external_urls: {
+    spotify: string;
+  };
+};
 
-export const createPlaylist: CreatePlaylist = async (session) => {
+type CreatePlaylist = (
+  options: CreatePlaylistOptions,
+) => Promise<CreatePlaylistResponse>;
+
+export const createPlaylist: CreatePlaylist = async ({ session }) => {
   const { id } = await getUser(session);
 
   return await http.post({
