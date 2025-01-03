@@ -44,7 +44,11 @@ const getUser: GetUser = async (session) => {
   });
 };
 
-type CreatePlaylist = (session: Session) => Promise<void>;
+type CreatePlaylistResponse = {
+  id: string;
+};
+
+type CreatePlaylist = (session: Session) => Promise<CreatePlaylistResponse>;
 
 export const createPlaylist: CreatePlaylist = async (session) => {
   const { id } = await getUser(session);
@@ -54,15 +58,25 @@ export const createPlaylist: CreatePlaylist = async (session) => {
     session,
     error: "Failed to create playlist",
     body: {
-      name: "Loved songs",
+      name: `Loved songs (CLS - ${Intl.DateTimeFormat("fr-FR").format(new Date())})`,
       description: "A playlist with all your loved songs",
     },
   });
 };
 
-type AddTracksToPlaylist = (session: Session) => Promise<void>;
+type AddTracksToPlaylistOptions = {
+  session: Session;
+  playlistId: string;
+};
 
-export const addTracksToPlaylist: AddTracksToPlaylist = async (session) => {
+type AddTracksToPlaylist = (
+  options: AddTracksToPlaylistOptions,
+) => Promise<void>;
+
+export const addTracksToPlaylist: AddTracksToPlaylist = async ({
+  playlistId,
+  session,
+}) => {
   const uris = [];
   const { items, total } = await getLovedSongs({ session, offset: 0 });
 
@@ -76,5 +90,19 @@ export const addTracksToPlaylist: AddTracksToPlaylist = async (session) => {
     for (const { track } of items) {
       uris.push(track.uri);
     }
+  }
+
+  const chunks = [];
+  for (let i = 0; i < uris.length; i += 100) {
+    chunks.push(uris.slice(i, i + 100));
+  }
+
+  for (const chunk of chunks) {
+    await http.post({
+      url: `https://api.spotify.com/v1/playlists/${playlistId}/tracks`,
+      session,
+      error: "Failed to add tracks to playlist",
+      body: { uris: chunk },
+    });
   }
 };

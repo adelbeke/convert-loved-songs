@@ -1,5 +1,9 @@
 import { Session } from "next-auth";
-import { addTracksToPlaylist, getLovedSongs } from "@/lib/provider/actions";
+import {
+  addTracksToPlaylist,
+  createPlaylist,
+  getLovedSongs,
+} from "@/lib/provider/actions";
 import { useState } from "react";
 
 type Props = {
@@ -25,8 +29,10 @@ export function ToPlaylist({ session }: Props) {
   const handleCreatePlaylist = async () => {
     try {
       setError(null);
-      // await createPlaylist(session);
-      await addTracksToPlaylist(session);
+      const { id } = await createPlaylist(session);
+      await addTracksToPlaylist({ session, playlistId: id });
+
+      alert("Playlist created");
     } catch (error) {
       setError((error as Error).message);
     }
