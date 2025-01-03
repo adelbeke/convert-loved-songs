@@ -7,17 +7,28 @@ type Props = {
 };
 
 export function ToPlaylist({ session }: Props) {
+  const [error, setError] = useState<string | null>(null);
   const [totalOfLovedSongs, setTotalOfLovedSongs] = useState<number | null>(
     null,
   );
 
   const handleGetLovedSongs = async () => {
-    const response = await getLovedSongs(session);
-    setTotalOfLovedSongs(response.total);
+    try {
+      setError(null);
+      const response = await getLovedSongs(session);
+      setTotalOfLovedSongs(response.total);
+    } catch (error) {
+      setError((error as Error).message);
+    }
   };
 
   const handleCreatePlaylist = async () => {
-    await createPlaylist(session);
+    try {
+      setError(null);
+      await createPlaylist(session);
+    } catch (error) {
+      setError((error as Error).message);
+    }
   };
 
   return (
@@ -27,6 +38,7 @@ export function ToPlaylist({ session }: Props) {
       {totalOfLovedSongs !== null && (
         <p>You have {totalOfLovedSongs} loved songs</p>
       )}
+      {error && <p className={"text-red-500"}>{error}</p>}
       <button onClick={handleGetLovedSongs}>Get loved songs</button>
       <button onClick={handleCreatePlaylist}>Create playlist</button>
     </div>
