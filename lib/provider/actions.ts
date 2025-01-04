@@ -51,6 +51,7 @@ const getUser: GetUser = async (session) => {
 
 type CreatePlaylistOptions = {
   session: Session;
+  name: string;
 };
 
 type CreatePlaylistResponse = {
@@ -64,7 +65,7 @@ type CreatePlaylist = (
   options: CreatePlaylistOptions,
 ) => Promise<CreatePlaylistResponse>;
 
-export const createPlaylist: CreatePlaylist = async ({ session }) => {
+export const createPlaylist: CreatePlaylist = async ({ session, name }) => {
   const { id } = await getUser(session);
 
   return await http.post({
@@ -72,8 +73,8 @@ export const createPlaylist: CreatePlaylist = async ({ session }) => {
     session,
     error: "Failed to create playlist",
     body: {
-      name: `Loved songs (CLS - ${Intl.DateTimeFormat("fr-FR").format(new Date())})`,
-      description: "A playlist with all your loved songs",
+      name,
+      description: "A playlist with all your loved songs generated with CLS",
     },
   });
 };

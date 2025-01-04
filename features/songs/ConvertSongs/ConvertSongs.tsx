@@ -18,10 +18,10 @@ export function ConvertSongs({ session }: Props) {
   >("idle");
   const [error, setError] = useState<string | null>(null);
 
-  const handleCreatePlaylist = async () => {
+  const handleCreatePlaylist = async (name: string) => {
     try {
       setCreatingState("playlist");
-      const playlist = await createPlaylist({ session });
+      const playlist = await createPlaylist({ session, name });
       setPlaylistUrl(playlist.external_urls.spotify);
       setCreatingState("fill");
       await addTracksToPlaylist({ session, playlistId: playlist.id });
