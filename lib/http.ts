@@ -1,4 +1,3 @@
-import { HttpSession } from "@/types/session";
 import { Session } from "next-auth";
 
 type HttpActionOptions = {
@@ -9,7 +8,10 @@ type HttpActionOptions = {
 
 type HttpGet = <T>(options: HttpActionOptions) => Promise<T>;
 type HttpPost = <T>(
-  options: HttpActionOptions & { body: unknown },
+  options: HttpActionOptions & {
+    body: unknown;
+    headers?: Record<string, string>;
+  },
 ) => Promise<T>;
 
 type Http = {
@@ -23,7 +25,7 @@ export const http: Http = {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${(session as HttpSession).token.access_token}`,
+        Authorization: `Bearer ${session.token.access_token}`,
       },
     });
 
@@ -33,12 +35,12 @@ export const http: Http = {
 
     return response.json();
   },
-  post: async ({ url, error, session, body }) => {
+  post: async ({ url, error, session, body, headers }) => {
     const response = await fetch(url, {
       method: "POST",
-      headers: {
+      headers: headers ?? {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${(session as HttpSession).token.access_token}`,
+        Authorization: `Bearer ${session.token.access_token}`,
       },
       body: JSON.stringify(body),
     });

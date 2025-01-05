@@ -1,6 +1,7 @@
 import NextAuth from "next-auth/next";
 import { type NextAuthOptions } from "next-auth";
 import SpotifyProvider from "next-auth/providers/spotify";
+import { refreshAccessToken } from "@/lib/provider/actions";
 
 const providers: NextAuthOptions["providers"] = [
   SpotifyProvider({
@@ -13,11 +14,26 @@ const providers: NextAuthOptions["providers"] = [
 ];
 
 const callbacks: NextAuthOptions["callbacks"] = {
-  async jwt({ token, account }) {
-    if (account) {
-      token.access_token = account.access_token;
+  async jwt({ token, account, user }) {
+    if (account && user) {
+      return {
+        access_token: account.access_token,
+        refresh_token: account.refresh_token,
+        access_token_expires: account.expires_at * 1000,
+        user,
+      };
     }
-    return token;
+
+    if (
+      token.access_token_expires &&
+      Date.now() < (token.access_token_expires as number)
+    ) {
+      return token;
+    }
+
+    return await refreshAccessToken({
+      token,
+    });
   },
   async session({ session, token }) {
     return {
