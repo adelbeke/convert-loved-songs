@@ -1,8 +1,54 @@
 "use server";
 
-import { HttpSession } from "@/types/session";
 import { http } from "@/lib/http";
 import { Session } from "next-auth";
+import { JWT } from "next-auth/jwt";
+
+type RefreshTokenOptions = {
+  token: JWT;
+};
+
+type RefreshToken = (options: RefreshTokenOptions) => Promise<JWT>;
+
+export const refreshAccessToken: RefreshToken = async ({ token }) => {
+  try {
+    const basicAuth = Buffer.from(
+      `${process.env.SPOTIFY_CLIENT_ID}:${process.env.SPOTIFY_CLIENT_SECRET}`,
+    ).toString("base64");
+
+    console.log("token", {
+      grant_type: "refresh_token",
+      refresh_token: token.refresh_token,
+    });
+
+    const response = await http.post<{
+      access_token: string;
+      expires_in: number;
+    }>({
+      url: "https://accounts.spotify.com/api/token",
+      body: {
+        grant_type: "refresh_token",
+        refresh_token: token.refresh_token,
+      },
+      headers: {
+        Authorization: `Basic ${basicAuth}`,
+        "Content-Type": "application/x-www-form-urlencoded",
+      },
+      session: {} as Session,
+      error: "Failed to refresh access token",
+    });
+
+    return {
+      ...token,
+      access_token: response.access_token,
+      access_token_expires: Date.now() + response.expires_in * 1000,
+    };
+  } catch (error) {
+    return {
+      ...token,
+    };
+  }
+};
 
 type GetLovedSongsOptions = {
   session: Session;
@@ -30,7 +76,7 @@ export const getLovedSongs: GetLovedSongs = async ({
 }) => {
   return await http.get<GetLovedSongsResponse>({
     url: `https://api.spotify.com/v1/me/tracks?offset=${offset}&limit=${limit}`,
-    session: session as HttpSession,
+    session,
     error: "Failed to fetch loved songs",
   });
 };

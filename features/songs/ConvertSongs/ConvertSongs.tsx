@@ -46,13 +46,12 @@ export function ConvertSongs({ session }: Props) {
     done: <Created playlistUrl={playlistUrl} />,
   };
 
-  if (!session.user) {
-    return null;
-  }
-
   return (
     <main className={"flex flex-col p-4 min-h-screen"}>
-      <Header image={session.user.image} name={session.user.name} />
+      <Header
+        image={session.token.user?.image}
+        name={session.token.user?.name}
+      />
       <section className={"flex-1 flex flex-col justify-center items-center"}>
         {["playlist", "fill"].includes(creatingState) && (
           <Icon
