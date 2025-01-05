@@ -16,11 +16,6 @@ export const refreshAccessToken: RefreshToken = async ({ token }) => {
       `${process.env.SPOTIFY_CLIENT_ID}:${process.env.SPOTIFY_CLIENT_SECRET}`,
     ).toString("base64");
 
-    console.log("token", {
-      grant_type: "refresh_token",
-      refresh_token: token.refresh_token,
-    });
-
     const response = await http.post<{
       access_token: string;
       expires_in: number;
